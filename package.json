@@ -1,0 +1,53 @@
+{
+  "name": "keepasshttp-client",
+  "version": "0.1.0",
+  "description": "Node.js module for interaction with KeePassHTTP",
+  "author": {
+    "name": "Vladimir Yakovlev",
+    "email": "dev.vladimir.y@gmail.com"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/brentertz/scapegoat/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "engines": {
+    "node": ">=6.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:vladimiry/keepasshttp-client.git"
+  },
+  "keywords": [
+    "keepass",
+    "password",
+    "security"
+  ],
+  "scripts": {
+    "compile": "tsc --listEmittedFiles --sourceMap --outDir ./compile",
+    "compile:watch": "tsc --listEmittedFiles --sourceMap --outDir ./compile -w",
+    "dist:clean": "rimraf ./dist",
+    "dist:build": "tsc --listEmittedFiles --noEmitOnError --declaration --outDir ./dist",
+    "dist": "npm-run-all lint test dist:clean dist:build",
+    "lint": "tslint ./src/**/*.ts",
+    "test": "ts-node node_modules/tape/bin/tape ./src/**/*.{spec,test}.ts"
+  },
+  "devDependencies": {
+    "@types/request-promise-native": "1.0.6",
+    "@types/tape": "4.2.30",
+    "npm-run-all": "4.1.1",
+    "rimraf": "2.6.1",
+    "tape": "4.8.0",
+    "ts-node": "3.3.0",
+    "tslint": "5.7.0",
+    "tslint-eslint-rules": "4.1.1",
+    "typescript": "2.4.2"
+  },
+  "dependencies": {
+    "request": "2.81.0",
+    "request-promise-native": "1.0.4"
+  }
+}

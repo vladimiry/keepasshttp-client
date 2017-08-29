@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "strictNullChecks": true,
+    "lib": [
+      "es2015"
+    ]
+  },
+  "files": [
+    "./src/index.ts"
+  ]
+}
