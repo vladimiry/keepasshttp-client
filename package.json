@@ -29,19 +29,22 @@
   "scripts": {
     "compile": "tsc --listEmittedFiles --sourceMap --outDir ./compile",
     "compile:watch": "tsc --listEmittedFiles --sourceMap --outDir ./compile -w",
+    "compile:test": "tsc --listEmittedFiles --outDir ./compile/test -p ./tsconfig-test.json",
     "dist:clean": "rimraf ./dist",
     "dist:build": "tsc --listEmittedFiles --noEmitOnError --declaration --outDir ./dist",
     "dist": "npm-run-all lint test dist:clean dist:build",
     "lint": "tslint ./src/**/*.ts",
-    "test": "ts-node node_modules/tape/bin/tape ./src/**/*.{spec,test}.ts"
+    "test:tape": "tape ./compile/test/**/*.{spec,test}.js",
+    "test": "npm-run-all compile:test test:tape"
   },
   "devDependencies": {
+    "@types/mock-require": "1.3.3",
     "@types/request-promise-native": "1.0.6",
     "@types/tape": "4.2.30",
+    "mock-require": "2.0.2",
     "npm-run-all": "4.1.1",
     "rimraf": "2.6.1",
     "tape": "4.8.0",
-    "ts-node": "3.3.0",
     "tslint": "5.7.0",
     "tslint-eslint-rules": "4.1.1",
     "typescript": "2.4.2"

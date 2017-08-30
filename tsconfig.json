@@ -1,15 +1,12 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-    "strictNullChecks": true,
+    "strict": true,
     "lib": [
       "es2015"
     ]
   },
-  "files": [
+  "include": [
     "./src/index.ts"
   ]
 }
