@@ -18,9 +18,10 @@ var ErrorCode;
 var TypedError = (function (_super) {
     __extends(TypedError, _super);
     function TypedError(message, code) {
+        var _newTarget = this.constructor;
         var _this = _super.call(this, message) || this;
         _this.code = code;
-        Object.setPrototypeOf(_this, ErrorResponse.prototype);
+        Object.setPrototypeOf(_this, _newTarget.prototype);
         return _this;
     }
     return TypedError;
@@ -29,10 +30,11 @@ exports.TypedError = TypedError;
 var ErrorResponse = (function (_super) {
     __extends(ErrorResponse, _super);
     function ErrorResponse(message, request, response, code) {
+        var _newTarget = this.constructor;
         var _this = _super.call(this, message, code) || this;
         _this.request = request;
         _this.response = response;
-        Object.setPrototypeOf(_this, ErrorResponse.prototype);
+        Object.setPrototypeOf(_this, _newTarget.prototype);
         return _this;
     }
     return ErrorResponse;
