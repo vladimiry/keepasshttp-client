@@ -1,7 +1,7 @@
 import {post} from "request-promise-native";
 import {createCipheriv, createDecipheriv, randomBytes} from "crypto";
 
-import {Request as Req, Response as Res} from "./model";
+import {Args, Request as Req, Response as Res} from "./model";
 import {ErrorCode, ErrorResponse, KeyId, TypedError} from "./model/common";
 
 const base64: BufferEncoding = "base64";
@@ -54,7 +54,7 @@ export class KeePassHttpClient {
             });
     }
 
-    getLogins(args: Req.Args) {
+    getLogins(args: Args.Base) {
         return this
             .execute<Req.GetLogins, Res.Complete>(Req.GetLogins, args)
             .then((response) => {
@@ -80,16 +80,20 @@ export class KeePassHttpClient {
             });
     }
 
-    getLoginsCount(args: Req.Args) {
+    getLoginsCount(args: Args.Base) {
         return this.execute<Req.GetLoginsCount, Res.Complete>(Req.GetLoginsCount, args);
     }
 
-    setLogin(args: Req.UpdatingArgs) {
-        return this.execute<Req.SetLogin, Res.Complete>(Req.SetLogin, args);
+    createLogin(args: Args.Create) {
+        return this.execute<Req.CreateLogin, Res.Complete>(Req.CreateLogin, args);
+    }
+
+    updateLogin(args: Args.Update) {
+        return this.execute<Req.UpdateLogin, Res.Complete>(Req.UpdateLogin, args);
     }
 
     private execute<T extends Req.Request, K extends Res.Base>(requestConstructor: { new (...args: any[]): T },
-                                                               args?: Req.Args) {
+                                                               args?: Args.Base) {
         const request = new requestConstructor();
 
         if (request instanceof Req.RequiredId && !this.id) {
@@ -99,18 +103,21 @@ export class KeePassHttpClient {
             );
         }
 
-        if (request instanceof Req.RequiredId || request instanceof Req.TestAssosiate) {
-            request.Id = this.id;
-        }
         if (request instanceof Req.Base) {
             const nonce = this.generateKey();
 
             request.Nonce = nonce;
             request.Verifier = this.encrypt(nonce, nonce);
         }
+
+        if (request instanceof Req.RequiredId || request instanceof Req.TestAssosiate) {
+            request.Id = this.id;
+        }
+
         if (request instanceof Req.Associate) {
             request.Key = this._key;
         }
+
         if (request instanceof Req.Logins) {
             if (!args) {
                 throw new TypedError(
@@ -123,20 +130,34 @@ export class KeePassHttpClient {
 
             request.Url = encryptValue(args.url);
 
-            if (args.realm) {
-                request.Realm = encryptValue(args.realm);
-            }
+            if (request instanceof Req.ModifyLogin) {
+                const modifyArgs = args as Args.Modify;
 
-            if (request instanceof Req.SetLogin) {
-                const updatingArgs = args as Req.UpdatingArgs;
+                request.Login = encryptValue(modifyArgs.login);
+                request.Password = encryptValue(modifyArgs.password);
+                request.Url = encryptValue(modifyArgs.url);
 
-                request.Uuid = encryptValue(updatingArgs.uuid);
-                request.Login = encryptValue(updatingArgs.login);
-                request.Password = encryptValue(updatingArgs.password);
-                request.Url = encryptValue(updatingArgs.url);
-                request.SubmitUrl = request.Url;
+                if (request instanceof Req.CreateLogin) {
+                    const createArgs = modifyArgs as Args.Create;
+
+                    request.SubmitUrl = request.Url;
+
+                    if (createArgs.realm) {
+                        request.Realm = encryptValue(createArgs.realm);
+                    }
+                }
+
+                if (request instanceof Req.UpdateLogin) {
+                    const updateArgs = modifyArgs as Args.Update;
+
+                    request.Uuid = encryptValue(updateArgs.uuid);
+                }
             } else if (args.submitUrl) {
                 request.SubmitUrl = encryptValue(args.submitUrl);
+
+                if (args.realm) {
+                    request.Realm = encryptValue(args.realm);
+                }
             }
         }
 

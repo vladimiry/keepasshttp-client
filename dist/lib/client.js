@@ -7,7 +7,7 @@ var common_1 = require("./model/common");
 var base64 = "base64";
 var utf8 = "utf8";
 var base64ToBuffer = function (value) { return Buffer.from(value, base64); };
-var KeePassHttpClient = (function () {
+var KeePassHttpClient = /** @class */ (function () {
     function KeePassHttpClient(opts) {
         this.ivSize = 16;
         this.keySize = 32;
@@ -83,8 +83,11 @@ var KeePassHttpClient = (function () {
     KeePassHttpClient.prototype.getLoginsCount = function (args) {
         return this.execute(model_1.Request.GetLoginsCount, args);
     };
-    KeePassHttpClient.prototype.setLogin = function (args) {
-        return this.execute(model_1.Request.SetLogin, args);
+    KeePassHttpClient.prototype.createLogin = function (args) {
+        return this.execute(model_1.Request.CreateLogin, args);
+    };
+    KeePassHttpClient.prototype.updateLogin = function (args) {
+        return this.execute(model_1.Request.UpdateLogin, args);
     };
     KeePassHttpClient.prototype.execute = function (requestConstructor, args) {
         var _this = this;
@@ -92,13 +95,13 @@ var KeePassHttpClient = (function () {
         if (request instanceof model_1.Request.RequiredId && !this.id) {
             throw new common_1.TypedError("The 'id' field must be defined to request/save a login. Use 'associate' method to get the 'id' value.", common_1.ErrorCode.IdUndefined);
         }
-        if (request instanceof model_1.Request.RequiredId || request instanceof model_1.Request.TestAssosiate) {
-            request.Id = this.id;
-        }
         if (request instanceof model_1.Request.Base) {
             var nonce = this.generateKey();
             request.Nonce = nonce;
             request.Verifier = this.encrypt(nonce, nonce);
+        }
+        if (request instanceof model_1.Request.RequiredId || request instanceof model_1.Request.TestAssosiate) {
+            request.Id = this.id;
         }
         if (request instanceof model_1.Request.Associate) {
             request.Key = this._key;
@@ -109,19 +112,28 @@ var KeePassHttpClient = (function () {
             }
             var encryptValue = function (value) { return _this.encrypt(request.Nonce, value); };
             request.Url = encryptValue(args.url);
-            if (args.realm) {
-                request.Realm = encryptValue(args.realm);
-            }
-            if (request instanceof model_1.Request.SetLogin) {
-                var updatingArgs = args;
-                request.Uuid = encryptValue(updatingArgs.uuid);
-                request.Login = encryptValue(updatingArgs.login);
-                request.Password = encryptValue(updatingArgs.password);
-                request.Url = encryptValue(updatingArgs.url);
-                request.SubmitUrl = request.Url;
+            if (request instanceof model_1.Request.ModifyLogin) {
+                var modifyArgs = args;
+                request.Login = encryptValue(modifyArgs.login);
+                request.Password = encryptValue(modifyArgs.password);
+                request.Url = encryptValue(modifyArgs.url);
+                if (request instanceof model_1.Request.CreateLogin) {
+                    var createArgs = modifyArgs;
+                    request.SubmitUrl = request.Url;
+                    if (createArgs.realm) {
+                        request.Realm = encryptValue(createArgs.realm);
+                    }
+                }
+                if (request instanceof model_1.Request.UpdateLogin) {
+                    var updateArgs = modifyArgs;
+                    request.Uuid = encryptValue(updateArgs.uuid);
+                }
             }
             else if (args.submitUrl) {
                 request.SubmitUrl = encryptValue(args.submitUrl);
+                if (args.realm) {
+                    request.Realm = encryptValue(args.realm);
+                }
             }
         }
         return this.request(request);
