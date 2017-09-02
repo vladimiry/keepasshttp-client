@@ -15,7 +15,7 @@ var ErrorCode;
     ErrorCode[ErrorCode["IdUndefined"] = 0] = "IdUndefined";
     ErrorCode[ErrorCode["ArgsUndefined"] = 1] = "ArgsUndefined";
 })(ErrorCode = exports.ErrorCode || (exports.ErrorCode = {}));
-var TypedError = (function (_super) {
+var TypedError = /** @class */ (function (_super) {
     __extends(TypedError, _super);
     function TypedError(message, code) {
         var _newTarget = this.constructor;
@@ -27,7 +27,7 @@ var TypedError = (function (_super) {
     return TypedError;
 }(Error));
 exports.TypedError = TypedError;
-var ErrorResponse = (function (_super) {
+var ErrorResponse = /** @class */ (function (_super) {
     __extends(ErrorResponse, _super);
     function ErrorResponse(message, request, response, code) {
         var _newTarget = this.constructor;

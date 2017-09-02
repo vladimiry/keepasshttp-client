@@ -1,4 +1,4 @@
-import { Request as Req, Response as Res } from "./model";
+import { Args, Response as Res } from "./model";
 import { KeyId } from "./model/common";
 export declare class KeePassHttpClient {
     private readonly ivSize;
@@ -16,9 +16,10 @@ export declare class KeePassHttpClient {
     readonly key: string;
     testAssociate(): Promise<Res.Base>;
     associate(): Promise<Res.Complete>;
-    getLogins(args: Req.Args): Promise<Res.Complete>;
-    getLoginsCount(args: Req.Args): Promise<Res.Complete>;
-    setLogin(args: Req.UpdatingArgs): Promise<Res.Complete>;
+    getLogins(args: Args.Base): Promise<Res.Complete>;
+    getLoginsCount(args: Args.Base): Promise<Res.Complete>;
+    createLogin(args: Args.Create): Promise<Res.Complete>;
+    updateLogin(args: Args.Update): Promise<Res.Complete>;
     private execute<T, K>(requestConstructor, args?);
     private request<T, K>(request);
     private generateKey(size?);

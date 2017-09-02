@@ -24,8 +24,8 @@ test("constructor args should be setup as a member fields", (t) => {
     t.end();
 });
 
-test("'getLogins/getLoginsCount/setLogin' methods should fail if 'id' has not been setup", (t) => {
-    t.plan(3 * 2);
+test("request methods should fail if 'id' has not been setup", (t) => {
+    t.plan(4 * 2);
 
     const client = new KeePassHttpClient();
     const assert = (error: Error) => {
@@ -44,7 +44,12 @@ test("'getLogins/getLoginsCount/setLogin' methods should fail if 'id' has not be
         assert(error);
     }
     try {
-        client.setLogin({url: "", uuid: "", login: "", password: ""});
+        client.createLogin({url: "", login: "", password: ""});
+    } catch (error) {
+        assert(error);
+    }
+    try {
+        client.updateLogin({url: "", uuid: "", login: "", password: ""});
     } catch (error) {
         assert(error);
     }
@@ -59,7 +64,8 @@ test("requests methods should return a promises", (t) => {
     t.ok(isPromise(client.associate()));
     t.ok(isPromise(client.getLogins({url: ""})));
     t.ok(isPromise(client.getLoginsCount({url: ""})));
-    t.ok(isPromise(client.setLogin({url: "", uuid: "", login: "", password: ""})));
+    t.ok(isPromise(client.createLogin({url: "", login: "", password: ""})));
+    t.ok(isPromise(client.updateLogin({url: "", uuid: "", login: "", password: ""})));
 
     t.end();
 });

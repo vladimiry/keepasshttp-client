@@ -5,16 +5,6 @@ export declare enum Type {
     GetLoginsCount = "get-logins-count",
     SetLogin = "set-login",
 }
-export interface Args {
-    url: string;
-    realm?: string;
-    submitUrl?: string;
-}
-export interface UpdatingArgs extends Args {
-    login: string;
-    password: string;
-    uuid: string;
-}
 export interface Request {
     Nonce: string;
     Verifier: string;
@@ -47,9 +37,13 @@ export declare class GetLogins extends Logins {
 export declare class GetLoginsCount extends Logins {
     RequestType: Type;
 }
-export declare class SetLogin extends Logins {
+export declare class ModifyLogin extends Logins {
     RequestType: Type;
     Login: string;
     Password: string;
-    Uuid?: string;
+}
+export declare class CreateLogin extends ModifyLogin {
+}
+export declare class UpdateLogin extends ModifyLogin {
+    Uuid: string;
 }
