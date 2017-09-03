@@ -9,13 +9,12 @@ is a Node.js module for interaction with [KeePassHTTP](https://github.com/pfn/ke
 
 ## Code Example
 
-Examples are in TypeScript syntax. For the JavaScript just use `require`-like dependencies importing.
-
 Associating with KeePassHTTP, caching received `id` and `key` values and then passwords requesting:
 ```typescript
     import * as nconf from "nconf";
     import {KeePassHttpClient} from "keepasshttp-client";
     
+    // we will be using "nconf" as a cache store, but you can use any store for this purpose
     nconf.file(".keepasshttp-creds");
     
     const client = new KeePassHttpClient();
@@ -23,11 +22,12 @@ Associating with KeePassHTTP, caching received `id` and `key` values and then pa
     client
         .associate()
         .then(() => {
-            // cache key/id for future use
+            // at this stage (after successful associating) key and id are setup as a members of the client instance
+            // so now we are ready to initiate the "get-logins" request
+            // but let's first cache initialized key/id for future use
             nconf.set("id", client.id);
             nconf.set("key", client.key);
             nconf.save(() => {
-                // at this stage key and id are initialized, so we can initiate "get-logins" request
                 client.getLogins({url: "https://domain.com"})
                     .then((response) => {
                         console.log(JSON.stringify(response, null, 4));
