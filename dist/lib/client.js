@@ -12,9 +12,9 @@ var KeePassHttpClient = /** @class */ (function () {
         this.ivSize = 16;
         this.keySize = 32;
         this.encryptionAlgorithm = "aes-256-cbc";
-        this._uri = "http://localhost:19455";
-        if (opts && opts.uri) {
-            this._uri = opts.uri;
+        this._url = "http://localhost:19455";
+        if (opts && opts.url) {
+            this._url = opts.url;
         }
         if (opts && opts.keyId) {
             this._id = opts.keyId.id;
@@ -24,9 +24,9 @@ var KeePassHttpClient = /** @class */ (function () {
             this._key = this.generateKey(this.keySize);
         }
     }
-    Object.defineProperty(KeePassHttpClient.prototype, "uri", {
+    Object.defineProperty(KeePassHttpClient.prototype, "url", {
         get: function () {
-            return this._uri;
+            return this._url;
         },
         enumerable: true,
         configurable: true
@@ -139,7 +139,7 @@ var KeePassHttpClient = /** @class */ (function () {
         return this.request(request);
     };
     KeePassHttpClient.prototype.request = function (request) {
-        return request_promise_native_1.post(this.uri, { json: true, body: request })
+        return request_promise_native_1.post(this.url, { json: true, body: request })
             .then(function (response) {
             if (!response || !response.Success || response.Error) {
                 throw new common_1.ErrorResponse("Remote service responded with an error response", request, response);

@@ -13,13 +13,13 @@ export class KeePassHttpClient {
     private readonly keySize = 32;
     private readonly encryptionAlgorithm = "aes-256-cbc";
 
-    private _uri: string = "http://localhost:19455";
+    private _url: string = "http://localhost:19455";
     private _id: string;
     private _key: string;
 
-    constructor(opts?: { uri?: string; keyId?: KeyId }) {
-        if (opts && opts.uri) {
-            this._uri = opts.uri;
+    constructor(opts?: { url?: string; keyId?: KeyId }) {
+        if (opts && opts.url) {
+            this._url = opts.url;
         }
         if (opts && opts.keyId) {
             this._id = opts.keyId.id;
@@ -29,8 +29,8 @@ export class KeePassHttpClient {
         }
     }
 
-    get uri(): string {
-        return this._uri;
+    get url(): string {
+        return this._url;
     }
 
     get id(): string {
@@ -165,7 +165,7 @@ export class KeePassHttpClient {
     }
 
     private request<T extends Req.Request, K extends Res.Base>(request: T) {
-        return post(this.uri, {json: true, body: request})
+        return post(this.url, {json: true, body: request})
             .then((response: K) => {
                 if (!response || !response.Success || response.Error) {
                     throw new ErrorResponse(`Remote service responded with an error response`, request, response);

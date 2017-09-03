@@ -7,7 +7,7 @@ import {Response} from "./model";
 import {ErrorCode, TypedError} from "./model/common";
 
 const clientOpts = {
-    uri: "http://localhost:12345",
+    url: "http://localhost:12345",
     keyId: {
         id: "id-",
         key: randomBytes(32).toString("base64"),
@@ -17,7 +17,7 @@ const clientOpts = {
 test("constructor args should be setup as a member fields", (t) => {
     const client = new KeePassHttpClient(clientOpts);
 
-    t.equal(client.uri, clientOpts.uri);
+    t.equal(client.url, clientOpts.url);
     t.equal(client.id, clientOpts.keyId.id);
     t.equal(client.key, clientOpts.keyId.key);
 

@@ -44,7 +44,7 @@ Requesting passwords using previously cached `id` and `key` values:
     nconf.file(".keepasshttp-creds");
     
     const client = new KeePassHttpClient({
-        // uri: "http://localhost:19555",
+        // url: "http://localhost:19555",
         keyId: {
             id: nconf.get("id"),
             key: nconf.get("key"),

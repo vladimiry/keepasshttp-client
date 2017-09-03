@@ -4,14 +4,14 @@ export declare class KeePassHttpClient {
     private readonly ivSize;
     private readonly keySize;
     private readonly encryptionAlgorithm;
-    private _uri;
+    private _url;
     private _id;
     private _key;
     constructor(opts?: {
-        uri?: string;
+        url?: string;
         keyId?: KeyId;
     });
-    readonly uri: string;
+    readonly url: string;
     readonly id: string;
     readonly key: string;
     testAssociate(): Promise<Res.Base>;
