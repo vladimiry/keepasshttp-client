@@ -8,7 +8,6 @@ export interface KeyId {
 
 export enum ErrorCode {
     IdUndefined,
-    ArgsUndefined,
 }
 
 export class TypedError extends Error {

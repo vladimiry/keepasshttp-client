@@ -10,6 +10,8 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+var util_1 = require("../util");
+var common_1 = require("./common");
 var Type;
 (function (Type) {
     Type["TestAssosiate"] = "test-associate";
@@ -19,17 +21,27 @@ var Type;
     Type["SetLogin"] = "set-login";
 })(Type = exports.Type || (exports.Type = {}));
 var Base = /** @class */ (function () {
-    function Base() {
+    function Base(key) {
+        var _this = this;
         this.TriggerUnlock = false;
+        this.encryptValue = function (value) { return util_1.encrypt(key, _this.Nonce, value); };
+        this.Nonce = util_1.generateRandomBase64(util_1.IV_SIZE);
+        this.Verifier = this.encryptValue(this.Nonce);
     }
+    Base.prototype.generateBody = function () {
+        return JSON.parse(JSON.stringify(this));
+    };
     return Base;
 }());
 exports.Base = Base;
 var TestAssosiate = /** @class */ (function (_super) {
     __extends(TestAssosiate, _super);
-    function TestAssosiate() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function TestAssosiate(key, id) {
+        var _this = _super.call(this, key) || this;
         _this.RequestType = Type.TestAssosiate;
+        if (typeof id !== "undefined") {
+            _this.Id = id;
+        }
         return _this;
     }
     return TestAssosiate;
@@ -37,9 +49,10 @@ var TestAssosiate = /** @class */ (function (_super) {
 exports.TestAssosiate = TestAssosiate;
 var Associate = /** @class */ (function (_super) {
     __extends(Associate, _super);
-    function Associate() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function Associate(key) {
+        var _this = _super.call(this, key) || this;
         _this.RequestType = Type.Associate;
+        _this.Key = key;
         return _this;
     }
     return Associate;
@@ -47,17 +60,23 @@ var Associate = /** @class */ (function (_super) {
 exports.Associate = Associate;
 var RequiredId = /** @class */ (function (_super) {
     __extends(RequiredId, _super);
-    function RequiredId() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function RequiredId(key, id) {
+        var _this = _super.call(this, key) || this;
+        if (!id) {
+            throw new common_1.TypedError("The 'id' field must be defined to request/save a login. Use 'associate' method to get the 'id' value.", common_1.ErrorCode.IdUndefined);
+        }
+        _this.Id = id;
+        return _this;
     }
     return RequiredId;
 }(Base));
 exports.RequiredId = RequiredId;
 var Logins = /** @class */ (function (_super) {
     __extends(Logins, _super);
-    function Logins() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function Logins(key, id, args) {
+        var _this = _super.call(this, key, id) || this;
         _this.SortSelection = false;
+        _this.Url = _this.encryptValue(args.url);
         return _this;
     }
     return Logins;
@@ -65,9 +84,15 @@ var Logins = /** @class */ (function (_super) {
 exports.Logins = Logins;
 var GetLogins = /** @class */ (function (_super) {
     __extends(GetLogins, _super);
-    function GetLogins() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function GetLogins(key, id, args) {
+        var _this = _super.call(this, key, id, args) || this;
         _this.RequestType = Type.GetLogins;
+        if (args.submitUrl) {
+            _this.SubmitUrl = _this.encryptValue(args.submitUrl);
+            if (args.realm) {
+                _this.Realm = _this.encryptValue(args.realm);
+            }
+        }
         return _this;
     }
     return GetLogins;
@@ -81,13 +106,15 @@ var GetLoginsCount = /** @class */ (function (_super) {
         return _this;
     }
     return GetLoginsCount;
-}(Logins));
+}(GetLogins));
 exports.GetLoginsCount = GetLoginsCount;
 var ModifyLogin = /** @class */ (function (_super) {
     __extends(ModifyLogin, _super);
-    function ModifyLogin() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function ModifyLogin(key, id, args) {
+        var _this = _super.call(this, key, id, args) || this;
         _this.RequestType = Type.SetLogin;
+        _this.Login = _this.encryptValue(args.login);
+        _this.Password = _this.encryptValue(args.password);
         return _this;
     }
     return ModifyLogin;
@@ -95,16 +122,23 @@ var ModifyLogin = /** @class */ (function (_super) {
 exports.ModifyLogin = ModifyLogin;
 var CreateLogin = /** @class */ (function (_super) {
     __extends(CreateLogin, _super);
-    function CreateLogin() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function CreateLogin(key, id, args) {
+        var _this = _super.call(this, key, id, args) || this;
+        _this.SubmitUrl = args.submitUrl;
+        if (args.realm) {
+            _this.Realm = _this.encryptValue(args.realm);
+        }
+        return _this;
     }
     return CreateLogin;
 }(ModifyLogin));
 exports.CreateLogin = CreateLogin;
 var UpdateLogin = /** @class */ (function (_super) {
     __extends(UpdateLogin, _super);
-    function UpdateLogin() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function UpdateLogin(key, id, args) {
+        var _this = _super.call(this, key, id, args) || this;
+        _this.Uuid = _this.encryptValue(args.uuid);
+        return _this;
     }
     return UpdateLogin;
 }(ModifyLogin));

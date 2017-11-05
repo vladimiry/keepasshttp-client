@@ -1,17 +1,46 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var request_promise_native_1 = require("request-promise-native");
-var crypto_1 = require("crypto");
 var model_1 = require("./model");
 var common_1 = require("./model/common");
-var base64 = "base64";
-var utf8 = "utf8";
-var base64ToBuffer = function (value) { return Buffer.from(value, base64); };
+var util_1 = require("./util");
 var KeePassHttpClient = /** @class */ (function () {
     function KeePassHttpClient(opts) {
-        this.ivSize = 16;
-        this.keySize = 32;
-        this.encryptionAlgorithm = "aes-256-cbc";
         this._url = "http://localhost:19455";
         if (opts && opts.url) {
             this._url = opts.url;
@@ -21,7 +50,7 @@ var KeePassHttpClient = /** @class */ (function () {
             this._key = opts.keyId.key;
         }
         else {
-            this._key = this.generateKey(this.keySize);
+            this._key = util_1.generateRandomBase64(util_1.KEY_SIZE);
         }
     }
     Object.defineProperty(KeePassHttpClient.prototype, "url", {
@@ -46,122 +75,93 @@ var KeePassHttpClient = /** @class */ (function () {
         configurable: true
     });
     KeePassHttpClient.prototype.testAssociate = function () {
-        return this.execute(model_1.Request.TestAssosiate);
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.request(new model_1.Request.TestAssosiate(this.key, this.id))];
+            });
+        });
     };
     KeePassHttpClient.prototype.associate = function () {
-        var _this = this;
-        return this
-            .execute(model_1.Request.Associate)
-            .then(function (response) {
-            _this._id = response.Id;
-            return response;
+        return __awaiter(this, void 0, void 0, function () {
+            var response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.request(new model_1.Request.Associate(this.key))];
+                    case 1:
+                        response = _a.sent();
+                        this._id = response.Id;
+                        return [2 /*return*/, response];
+                }
+            });
         });
     };
     KeePassHttpClient.prototype.getLogins = function (args) {
-        var _this = this;
-        return this
-            .execute(model_1.Request.GetLogins, args)
-            .then(function (response) {
-            var decryptValue = (function (value) { return _this.decrypt(response.Nonce, value); });
-            if (response.Entries) {
-                response.Entries.forEach(function (entry) {
-                    entry.Name = decryptValue(entry.Name);
-                    entry.Login = decryptValue(entry.Login);
-                    entry.Password = decryptValue(entry.Password);
-                    entry.Uuid = decryptValue(entry.Uuid);
-                    if (entry.StringFields) {
-                        entry.StringFields.forEach(function (field) {
-                            field.Key = decryptValue(field.Key);
-                            field.Value = decryptValue(field.Value);
-                        });
-                    }
-                });
-            }
-            return response;
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            var response, decryptValue;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.request(new model_1.Request.GetLogins(this.key, this.id, args))];
+                    case 1:
+                        response = _a.sent();
+                        decryptValue = (function (value) { return util_1.decrypt(_this.key, response.Nonce, value); });
+                        if (response.Entries) {
+                            response.Entries.forEach(function (entry) {
+                                entry.Name = decryptValue(entry.Name);
+                                entry.Login = decryptValue(entry.Login);
+                                entry.Password = decryptValue(entry.Password);
+                                entry.Uuid = decryptValue(entry.Uuid);
+                                if (entry.StringFields) {
+                                    entry.StringFields.forEach(function (field) {
+                                        field.Key = decryptValue(field.Key);
+                                        field.Value = decryptValue(field.Value);
+                                    });
+                                }
+                            });
+                        }
+                        return [2 /*return*/, response];
+                }
+            });
         });
     };
     KeePassHttpClient.prototype.getLoginsCount = function (args) {
-        return this.execute(model_1.Request.GetLoginsCount, args);
-    };
-    KeePassHttpClient.prototype.createLogin = function (args) {
-        return this.execute(model_1.Request.CreateLogin, args);
-    };
-    KeePassHttpClient.prototype.updateLogin = function (args) {
-        return this.execute(model_1.Request.UpdateLogin, args);
-    };
-    KeePassHttpClient.prototype.execute = function (requestConstructor, args) {
-        var _this = this;
-        var request = new requestConstructor();
-        if (request instanceof model_1.Request.RequiredId && !this.id) {
-            throw new common_1.TypedError("The 'id' field must be defined to request/save a login. Use 'associate' method to get the 'id' value.", common_1.ErrorCode.IdUndefined);
-        }
-        if (request instanceof model_1.Request.Base) {
-            var nonce = this.generateKey();
-            request.Nonce = nonce;
-            request.Verifier = this.encrypt(nonce, nonce);
-        }
-        if (request instanceof model_1.Request.RequiredId || request instanceof model_1.Request.TestAssosiate) {
-            request.Id = this.id;
-        }
-        if (request instanceof model_1.Request.Associate) {
-            request.Key = this._key;
-        }
-        if (request instanceof model_1.Request.Logins) {
-            if (!args) {
-                throw new common_1.TypedError("Request parameters have not been passed", common_1.ErrorCode.ArgsUndefined);
-            }
-            var encryptValue = function (value) { return _this.encrypt(request.Nonce, value); };
-            request.Url = encryptValue(args.url);
-            if (request instanceof model_1.Request.ModifyLogin) {
-                var modifyArgs = args;
-                request.Login = encryptValue(modifyArgs.login);
-                request.Password = encryptValue(modifyArgs.password);
-                request.Url = encryptValue(modifyArgs.url);
-                if (request instanceof model_1.Request.CreateLogin) {
-                    var createArgs = modifyArgs;
-                    request.SubmitUrl = request.Url;
-                    if (createArgs.realm) {
-                        request.Realm = encryptValue(createArgs.realm);
-                    }
-                }
-                if (request instanceof model_1.Request.UpdateLogin) {
-                    var updateArgs = modifyArgs;
-                    request.Uuid = encryptValue(updateArgs.uuid);
-                }
-            }
-            else if (args.submitUrl) {
-                request.SubmitUrl = encryptValue(args.submitUrl);
-                if (args.realm) {
-                    request.Realm = encryptValue(args.realm);
-                }
-            }
-        }
-        return this.request(request);
-    };
-    KeePassHttpClient.prototype.request = function (request) {
-        return request_promise_native_1.post(this.url, { json: true, body: request })
-            .then(function (response) {
-            if (!response || !response.Success || response.Error) {
-                throw new common_1.ErrorResponse("Remote service responded with an error response", request, response);
-            }
-            return response;
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.request(new model_1.Request.GetLoginsCount(this.key, this.id, args))];
+            });
         });
     };
-    KeePassHttpClient.prototype.generateKey = function (size) {
-        if (size === void 0) { size = this.ivSize; }
-        return crypto_1.randomBytes(size).toString(base64);
+    KeePassHttpClient.prototype.createLogin = function (args) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.request(new model_1.Request.CreateLogin(this.key, this.id, args))];
+            });
+        });
     };
-    KeePassHttpClient.prototype.encrypt = function (iv, data) {
-        var cipher = crypto_1.createCipheriv(this.encryptionAlgorithm, base64ToBuffer(this._key), base64ToBuffer(iv));
-        return Buffer
-            .concat([cipher.update(Buffer.from(data, utf8)), cipher.final()])
-            .toString(base64);
+    KeePassHttpClient.prototype.updateLogin = function (args) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.request(new model_1.Request.UpdateLogin(this.key, this.id, args))];
+            });
+        });
     };
-    KeePassHttpClient.prototype.decrypt = function (iv, data) {
-        var decipher = crypto_1.createDecipheriv(this.encryptionAlgorithm, base64ToBuffer(this._key), base64ToBuffer(iv));
-        return Buffer
-            .concat([decipher.update(base64ToBuffer(data)), decipher.final()])
-            .toString(utf8);
+    KeePassHttpClient.prototype.request = function (request) {
+        return __awaiter(this, void 0, void 0, function () {
+            var body, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        body = request.generateBody();
+                        return [4 /*yield*/, request_promise_native_1.post(this.url, { json: true, body: body })];
+                    case 1:
+                        response = _a.sent();
+                        if (!response || !response.Success || response.Error) {
+                            throw new common_1.ErrorResponse("Remote service responded with an error response", request, response);
+                        }
+                        return [2 /*return*/, response];
+                }
+            });
+        });
     };
     return KeePassHttpClient;
 }());

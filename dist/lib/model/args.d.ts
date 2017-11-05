@@ -10,11 +10,7 @@ export interface Modify extends Minimum {
     password: string;
 }
 export interface Create extends Modify, Base {
-    login: string;
-    password: string;
 }
 export interface Update extends Modify {
-    login: string;
-    password: string;
     uuid: string;
 }

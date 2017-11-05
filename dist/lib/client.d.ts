@@ -1,12 +1,9 @@
 import { Args, Response as Res } from "./model";
 import { KeyId } from "./model/common";
 export declare class KeePassHttpClient {
-    private readonly ivSize;
-    private readonly keySize;
-    private readonly encryptionAlgorithm;
+    private readonly _key;
     private _url;
     private _id;
-    private _key;
     constructor(opts?: {
         url?: string;
         keyId?: KeyId;
@@ -20,9 +17,5 @@ export declare class KeePassHttpClient {
     getLoginsCount(args: Args.Base): Promise<Res.Complete>;
     createLogin(args: Args.Create): Promise<Res.Complete>;
     updateLogin(args: Args.Update): Promise<Res.Complete>;
-    private execute<T, K>(requestConstructor, args?);
-    private request<T, K>(request);
-    private generateKey(size?);
-    private encrypt(iv, data);
-    private decrypt(iv, data);
+    private request<T>(request);
 }

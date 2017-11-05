@@ -6,7 +6,6 @@ export interface KeyId {
 }
 export declare enum ErrorCode {
     IdUndefined = 0,
-    ArgsUndefined = 1,
 }
 export declare class TypedError extends Error {
     code: ErrorCode | undefined;

@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var ErrorCode;
 (function (ErrorCode) {
     ErrorCode[ErrorCode["IdUndefined"] = 0] = "IdUndefined";
-    ErrorCode[ErrorCode["ArgsUndefined"] = 1] = "ArgsUndefined";
 })(ErrorCode = exports.ErrorCode || (exports.ErrorCode = {}));
 var TypedError = /** @class */ (function (_super) {
     __extends(TypedError, _super);

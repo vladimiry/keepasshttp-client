@@ -1,16 +1,16 @@
 import * as test from "tape";
 import * as mockRequire from "mock-require";
-import {createCipheriv, randomBytes} from "crypto";
 
 import {KeePassHttpClient} from "./client";
 import {Response} from "./model";
 import {ErrorCode, TypedError} from "./model/common";
+import {encrypt, generateRandomBase64, IV_SIZE, KEY_SIZE} from "./util";
 
 const clientOpts = {
     url: "http://localhost:12345",
     keyId: {
         id: "id-",
-        key: randomBytes(32).toString("base64"),
+        key: generateRandomBase64(KEY_SIZE),
     },
 };
 
@@ -24,7 +24,7 @@ test("constructor args should be setup as a member fields", (t) => {
     t.end();
 });
 
-test("request methods should fail if 'id' has not been setup", (t) => {
+test("request methods should fail if 'id' has not been setup", async (t) => {
     t.plan(4 * 2);
 
     const client = new KeePassHttpClient();
@@ -34,22 +34,22 @@ test("request methods should fail if 'id' has not been setup", (t) => {
     };
 
     try {
-        client.getLogins({url: ""});
+        await client.getLogins({url: ""});
     } catch (error) {
         assert(error);
     }
     try {
-        client.getLoginsCount({url: ""});
+        await client.getLoginsCount({url: ""});
     } catch (error) {
         assert(error);
     }
     try {
-        client.createLogin({url: "", login: "", password: ""});
+        await client.createLogin({url: "", login: "", password: ""});
     } catch (error) {
         assert(error);
     }
     try {
-        client.updateLogin({url: "", uuid: "", login: "", password: ""});
+        await client.updateLogin({url: "", uuid: "", login: "", password: ""});
     } catch (error) {
         assert(error);
     }
@@ -70,7 +70,7 @@ test("requests methods should return a promises", (t) => {
     t.end();
 });
 
-test("values of the password entry should be properly decrypted", (t) => {
+test("values of the password entry should be properly decrypted", async (t) => {
     t.plan(6);
 
     const expectedEntriesResponse = {
@@ -86,17 +86,6 @@ test("values of the password entry should be properly decrypted", (t) => {
             } as Response.Entry,
         ],
     };
-    const encrypt = (key: string, iv: string, data: string) => {
-        const cipher = createCipheriv(
-            "aes-256-cbc",
-            Buffer.from(key, "base64"),
-            Buffer.from(iv, "base64"),
-        );
-
-        return Buffer
-            .concat([cipher.update(Buffer.from(data, "utf8")), cipher.final()])
-            .toString("base64");
-    };
     const clientModule = "./client";
     const mockedModule = "request-promise-native";
 
@@ -104,7 +93,7 @@ test("values of the password entry should be properly decrypted", (t) => {
         post: () => {
             return new Promise((resolve) => {
                 const key = clientOpts.keyId.key;
-                const iv = randomBytes(16).toString("base64");
+                const iv = generateRandomBase64(IV_SIZE);
 
                 const httpResponse = JSON.parse(JSON.stringify(expectedEntriesResponse));
                 const httpResponseEntry = httpResponse.Entries[0];
@@ -127,25 +116,23 @@ test("values of the password entry should be properly decrypted", (t) => {
 
     const reImportedKeePassHttpClient = require(clientModule).KeePassHttpClient;
     const client = new reImportedKeePassHttpClient(clientOpts);
+    const response = await client.getLogins({url: ""});
 
-    client.getLogins({url: ""})
-        .then((response: Response.Complete) => {
-            if (!response || !response.Entries) {
-                t.fail("Invalid response");
-                return;
-            }
+    if (!response || !response.Entries) {
+        t.fail("Invalid response");
+        return;
+    }
 
-            const entry = response.Entries[0];
-            const expectedEntry = expectedEntriesResponse.Entries[0];
+    const entry = response.Entries[0];
+    const expectedEntry = expectedEntriesResponse.Entries[0];
 
-            t.ok(response);
-            t.ok(response.Entries && response.Entries.length === 1);
+    t.ok(response);
+    t.ok(response.Entries && response.Entries.length === 1);
 
-            t.equal(entry.Uuid, expectedEntry.Uuid);
-            t.equal(entry.Name, expectedEntry.Name);
-            t.equal(entry.Login, expectedEntry.Login);
-            t.equal(entry.Password, expectedEntry.Password);
+    t.equal(entry.Uuid, expectedEntry.Uuid);
+    t.equal(entry.Name, expectedEntry.Name);
+    t.equal(entry.Login, expectedEntry.Login);
+    t.equal(entry.Password, expectedEntry.Password);
 
-            mockRequire.stop(mockedModule);
-        });
+    mockRequire.stop(mockedModule);
 });

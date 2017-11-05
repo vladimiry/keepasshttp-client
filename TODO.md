@@ -1,0 +1,2 @@
+- ~~Move requests forming from the client class into the respective request classes.~~
+- Extend test coverage.
