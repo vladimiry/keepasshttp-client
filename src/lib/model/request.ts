@@ -26,10 +26,6 @@ export class Base implements Request {
         this.Nonce = generateRandomBase64(IV_SIZE);
         this.Verifier = this.encryptValue(this.Nonce);
     }
-
-    generateBody(): {[k: string]: any } {
-        return JSON.parse(JSON.stringify(this));
-    }
 }
 
 export class TestAssosiate extends Base {

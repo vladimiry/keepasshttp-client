@@ -1,4 +1,4 @@
-import {post} from "request-promise-native";
+import fetch from "node-fetch";
 
 import {Args, Request as Req, Response as Res} from "./model";
 import {ErrorResponse, KeyId} from "./model/common";
@@ -81,8 +81,9 @@ export class KeePassHttpClient {
     }
 
     private async request<T extends Res.Base>(request: any): Promise<T> {
-        const body = request.generateBody();
-        const response: T = await post(this.url, {json: true, body});
+        const body = JSON.stringify(request);
+        const fetchRequest = await fetch(this.url, {method: "POST", body});
+        const response: T = await fetchRequest.json();
 
         if (!response || !response.Success || response.Error) {
             throw new ErrorResponse(`Remote service responded with an error response`, request, response);
