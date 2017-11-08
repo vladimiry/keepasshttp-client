@@ -1,7 +1,12 @@
 import fetch from "node-fetch";
 
+import {
+    KeyId,
+    NetworkConnectionError,
+    NetworkResponseContentError,
+    NetworkResponseStatusCodeError,
+} from "./model/common";
 import {Args, Request as Req, Response as Res} from "./model";
-import {ErrorResponse, KeyId} from "./model/common";
 import {decrypt, generateRandomBase64, KEY_SIZE} from "./util";
 
 export class KeePassHttpClient {
@@ -82,11 +87,22 @@ export class KeePassHttpClient {
 
     private async request<T extends Res.Base>(request: any): Promise<T> {
         const body = JSON.stringify(request);
-        const fetchRequest = await fetch(this.url, {method: "POST", body});
-        const response: T = await fetchRequest.json();
+        let fetchedResponse;
+
+        try {
+            fetchedResponse = await fetch(this.url, {method: "POST", body});
+        } catch (err) {
+            throw new NetworkConnectionError(err.message);
+        }
+
+        if (!fetchedResponse.ok) {
+            throw new NetworkResponseStatusCodeError(fetchedResponse.statusText, fetchedResponse.status);
+        }
+
+        const response: T = await fetchedResponse.json();
 
         if (!response || !response.Success || response.Error) {
-            throw new ErrorResponse(`Remote service responded with an error response`, request, response);
+            throw new NetworkResponseContentError(`Remote service responded with an error response`, request, response);
         }
 
         return response;

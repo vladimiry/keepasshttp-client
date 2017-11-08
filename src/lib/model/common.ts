@@ -17,9 +17,23 @@ export class TypedError extends Error {
     }
 }
 
-export class ErrorResponse<T extends Response.Base> extends TypedError {
-    constructor(message: string, public request: Request.Request, public response: T, code?: ErrorCode) {
-        super(message, code);
+export class NetworkConnectionError extends Error {
+    constructor(message: string) {
+        super(message);
+        Object.setPrototypeOf(this, new.target.prototype);
+    }
+}
+
+export class NetworkResponseStatusCodeError extends Error {
+    constructor(message: string, public statusCode: number) {
+        super(message);
+        Object.setPrototypeOf(this, new.target.prototype);
+    }
+}
+
+export class NetworkResponseContentError<T extends Response.Base> extends Error {
+    constructor(message: string, public request: Request.Request, public response: T) {
+        super(message);
         Object.setPrototypeOf(this, new.target.prototype);
     }
 }

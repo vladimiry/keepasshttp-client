@@ -1,10 +1,9 @@
 import * as test from "tape";
-import * as mockRequire from "mock-require";
-
 import {KeePassHttpClient} from "./client";
 import {Response} from "./model";
 import {ErrorCode, TypedError} from "./model/common";
 import {encrypt, generateRandomBase64, IV_SIZE, KEY_SIZE} from "./util";
+// import * as mockRequire from "mock-require";
 
 const clientOpts = {
     url: "http://localhost:12345",
@@ -86,36 +85,30 @@ test("values of the password entry should be properly decrypted", async (t) => {
             } as Response.Entry,
         ],
     };
-    const clientModule = "./client";
-    const mockedModule = "request-promise-native";
 
-    mockRequire(mockedModule, {
-        post: () => {
-            return new Promise((resolve) => {
-                const key = clientOpts.keyId.key;
-                const iv = generateRandomBase64(IV_SIZE);
+    const client = new KeePassHttpClient(clientOpts);
 
-                const httpResponse = JSON.parse(JSON.stringify(expectedEntriesResponse));
-                const httpResponseEntry = httpResponse.Entries[0];
+    // mocking "request" method - it's not what is being tested in this case
+    (client as any).request = () => {
+        return new Promise((resolve) => {
+            const key = clientOpts.keyId.key;
+            const iv = generateRandomBase64(IV_SIZE);
 
-                httpResponse.Nonce = iv;
-                httpResponse.Verifier = encrypt(key, iv, iv);
+            const httpResponse = JSON.parse(JSON.stringify(expectedEntriesResponse));
+            const httpResponseEntry = httpResponse.Entries[0];
 
-                httpResponseEntry.Name = encrypt(key, iv, httpResponse.Entries[0].Name as string);
-                httpResponseEntry.Login = encrypt(key, iv, httpResponse.Entries[0].Login as string);
-                httpResponseEntry.Password = encrypt(key, iv, httpResponse.Entries[0].Password as string);
-                httpResponseEntry.Uuid = encrypt(key, iv, httpResponse.Entries[0].Uuid);
+            httpResponse.Nonce = iv;
+            httpResponse.Verifier = encrypt(key, iv, iv);
 
-                resolve(httpResponse);
-            });
-        },
-    });
+            httpResponseEntry.Name = encrypt(key, iv, httpResponse.Entries[0].Name as string);
+            httpResponseEntry.Login = encrypt(key, iv, httpResponse.Entries[0].Login as string);
+            httpResponseEntry.Password = encrypt(key, iv, httpResponse.Entries[0].Password as string);
+            httpResponseEntry.Uuid = encrypt(key, iv, httpResponse.Entries[0].Uuid);
 
-    // uncache previously loaded library
-    delete require.cache[require.resolve(clientModule)];
+            resolve(httpResponse);
+        });
+    };
 
-    const reImportedKeePassHttpClient = require(clientModule).KeePassHttpClient;
-    const client = new reImportedKeePassHttpClient(clientOpts);
     const response = await client.getLogins({url: ""});
 
     if (!response || !response.Entries) {
@@ -133,6 +126,4 @@ test("values of the password entry should be properly decrypted", async (t) => {
     t.equal(entry.Name, expectedEntry.Name);
     t.equal(entry.Login, expectedEntry.Login);
     t.equal(entry.Password, expectedEntry.Password);
-
-    mockRequire.stop(mockedModule);
 });
