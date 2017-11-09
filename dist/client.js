@@ -37,8 +37,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var node_fetch_1 = require("node-fetch");
 var common_1 = require("./model/common");
-var model_1 = require("./model");
 var util_1 = require("./util");
+var Request = require("./model/request");
 var KeePassHttpClient = /** @class */ (function () {
     function KeePassHttpClient(opts) {
         this._url = "http://localhost:19455";
@@ -77,7 +77,7 @@ var KeePassHttpClient = /** @class */ (function () {
     KeePassHttpClient.prototype.testAssociate = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.request(new model_1.Request.TestAssosiate(this.key, this.id))];
+                return [2 /*return*/, this.request(new Request.TestAssosiate(this.key, this.id))];
             });
         });
     };
@@ -86,7 +86,7 @@ var KeePassHttpClient = /** @class */ (function () {
             var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.request(new model_1.Request.Associate(this.key))];
+                    case 0: return [4 /*yield*/, this.request(new Request.Associate(this.key))];
                     case 1:
                         response = _a.sent();
                         this._id = response.Id;
@@ -101,7 +101,7 @@ var KeePassHttpClient = /** @class */ (function () {
             var response, decryptValue;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.request(new model_1.Request.GetLogins(this.key, this.id, args))];
+                    case 0: return [4 /*yield*/, this.request(new Request.GetLogins(this.key, this.id, args))];
                     case 1:
                         response = _a.sent();
                         decryptValue = (function (value) { return util_1.decrypt(_this.key, response.Nonce, value); });
@@ -127,21 +127,21 @@ var KeePassHttpClient = /** @class */ (function () {
     KeePassHttpClient.prototype.getLoginsCount = function (args) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.request(new model_1.Request.GetLoginsCount(this.key, this.id, args))];
+                return [2 /*return*/, this.request(new Request.GetLoginsCount(this.key, this.id, args))];
             });
         });
     };
     KeePassHttpClient.prototype.createLogin = function (args) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.request(new model_1.Request.CreateLogin(this.key, this.id, args))];
+                return [2 /*return*/, this.request(new Request.CreateLogin(this.key, this.id, args))];
             });
         });
     };
     KeePassHttpClient.prototype.updateLogin = function (args) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, this.request(new model_1.Request.UpdateLogin(this.key, this.id, args))];
+                return [2 /*return*/, this.request(new Request.UpdateLogin(this.key, this.id, args))];
             });
         });
     };
