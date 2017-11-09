@@ -3,7 +3,6 @@ import {KeePassHttpClient} from "./client";
 import {Response} from "./model";
 import {ErrorCode, TypedError} from "./model/common";
 import {encrypt, generateRandomBase64, IV_SIZE, KEY_SIZE} from "./util";
-// import * as mockRequire from "mock-require";
 
 const clientOpts = {
     url: "http://localhost:12345",

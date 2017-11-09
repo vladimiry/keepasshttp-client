@@ -7,9 +7,7 @@ import {
     NetworkResponseStatusCodeError,
 } from "./model/common";
 import {decrypt, generateRandomBase64, KEY_SIZE} from "./util";
-import * as Request from "./model/request";
-import * as Response from "./model/response";
-import * as Args from "./model/args";
+import {Args, Request, Response} from "./model";
 
 export class KeePassHttpClient {
     private readonly _key: string;
