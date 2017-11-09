@@ -20,6 +20,7 @@ var Type;
     Type["GetLoginsCount"] = "get-logins-count";
     Type["SetLogin"] = "set-login";
 })(Type = exports.Type || (exports.Type = {}));
+// tslint:disable:variable-name
 var Base = /** @class */ (function () {
     function Base(key) {
         var _this = this;
@@ -140,3 +141,4 @@ var UpdateLogin = /** @class */ (function (_super) {
     return UpdateLogin;
 }(ModifyLogin));
 exports.UpdateLogin = UpdateLogin;
+// tslint:enable:variable-name

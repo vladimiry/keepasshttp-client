@@ -2,7 +2,7 @@
 /compile
 
 # dependencies
-/node_modules
+node_modules
 
 # IDEs / editors
 /.idea

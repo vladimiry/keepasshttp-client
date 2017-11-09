@@ -6,8 +6,10 @@ import {
     NetworkResponseContentError,
     NetworkResponseStatusCodeError,
 } from "./model/common";
-import {Args, Request as Req, Response as Res} from "./model";
 import {decrypt, generateRandomBase64, KEY_SIZE} from "./util";
+import * as Request from "./model/request";
+import * as Response from "./model/response";
+import * as Args from "./model/args";
 
 export class KeePassHttpClient {
     private readonly _key: string;
@@ -39,11 +41,11 @@ export class KeePassHttpClient {
     }
 
     async testAssociate() {
-        return this.request<Res.Base>(new Req.TestAssosiate(this.key, this.id));
+        return this.request<Response.Base>(new Request.TestAssosiate(this.key, this.id));
     }
 
     async associate() {
-        const response = await this.request<Res.Complete>(new Req.Associate(this.key));
+        const response = await this.request<Response.Complete>(new Request.Associate(this.key));
 
         this._id = response.Id;
 
@@ -51,7 +53,7 @@ export class KeePassHttpClient {
     }
 
     async getLogins(args: Args.Base) {
-        const response = await this.request<Res.Complete>(new Req.GetLogins(this.key, this.id, args));
+        const response = await this.request<Response.Complete>(new Request.GetLogins(this.key, this.id, args));
         const decryptValue = ((value: string): string => decrypt(this.key, response.Nonce as string, value));
 
         if (response.Entries) {
@@ -74,18 +76,18 @@ export class KeePassHttpClient {
     }
 
     async getLoginsCount(args: Args.Base) {
-        return this.request<Res.Complete>(new Req.GetLoginsCount(this.key, this.id, args));
+        return this.request<Response.Complete>(new Request.GetLoginsCount(this.key, this.id, args));
     }
 
     async createLogin(args: Args.Create) {
-        return this.request<Res.Complete>(new Req.CreateLogin(this.key, this.id, args));
+        return this.request<Response.Complete>(new Request.CreateLogin(this.key, this.id, args));
     }
 
     async updateLogin(args: Args.Update) {
-        return this.request<Res.Complete>(new Req.UpdateLogin(this.key, this.id, args));
+        return this.request<Response.Complete>(new Request.UpdateLogin(this.key, this.id, args));
     }
 
-    private async request<T extends Res.Base>(request: any): Promise<T> {
+    private async request<T extends Response.Base>(request: any): Promise<T> {
         const body = JSON.stringify(request);
         let fetchedResponse;
 

@@ -15,6 +15,8 @@ export interface Request {
     Verifier: string;
 }
 
+// tslint:disable:variable-name
+
 export class Base implements Request {
     TriggerUnlock = false;
     Nonce: string;
@@ -137,3 +139,5 @@ export class UpdateLogin extends ModifyLogin {
         this.Uuid = this.encryptValue(args.uuid);
     }
 }
+
+// tslint:enable:variable-name
