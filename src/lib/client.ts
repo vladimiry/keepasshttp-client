@@ -1,12 +1,7 @@
 import fetch from "node-fetch";
 
-import {
-    KeyId,
-    NetworkConnectionError,
-    NetworkResponseContentError,
-    NetworkResponseStatusCodeError,
-} from "./model/common";
-import {decrypt, generateRandomBase64, KEY_SIZE} from "./util";
+import {KeyId, NetworkConnectionError, NetworkResponseContentError, NetworkResponseStatusCodeError} from "./model/common";
+import {decrypt, generateRandomBase64, KEY_SIZE} from "./private/util";
 import {Args, Request, Response} from "./model";
 
 export class KeePassHttpClient {
@@ -38,11 +33,11 @@ export class KeePassHttpClient {
         return this._key;
     }
 
-    async testAssociate() {
+    public async testAssociate() {
         return this.request<Response.Base>(new Request.TestAssosiate(this.key, this.id));
     }
 
-    async associate() {
+    public async associate() {
         const response = await this.request<Response.Complete>(new Request.Associate(this.key));
 
         this._id = response.Id;
@@ -50,7 +45,7 @@ export class KeePassHttpClient {
         return response;
     }
 
-    async getLogins(args: Args.Base) {
+    public async getLogins(args: Args.Base) {
         const response = await this.request<Response.Complete>(new Request.GetLogins(this.key, this.id, args));
         const decryptValue = ((value: string): string => decrypt(this.key, response.Nonce as string, value));
 
@@ -73,15 +68,15 @@ export class KeePassHttpClient {
         return response;
     }
 
-    async getLoginsCount(args: Args.Base) {
+    public async getLoginsCount(args: Args.Base) {
         return this.request<Response.Complete>(new Request.GetLoginsCount(this.key, this.id, args));
     }
 
-    async createLogin(args: Args.Create) {
+    public async createLogin(args: Args.Create) {
         return this.request<Response.Complete>(new Request.CreateLogin(this.key, this.id, args));
     }
 
-    async updateLogin(args: Args.Update) {
+    public async updateLogin(args: Args.Update) {
         return this.request<Response.Complete>(new Request.UpdateLogin(this.key, this.id, args));
     }
 

@@ -1,3 +1,5 @@
+// tslint:disable:max-classes-per-file
+
 import * as Response from "./response";
 import * as Request from "./request";
 

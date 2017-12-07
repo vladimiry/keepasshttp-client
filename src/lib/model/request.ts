@@ -1,4 +1,7 @@
-import {encrypt, generateRandomBase64, IV_SIZE} from "../util";
+// tslint:disable:max-classes-per-file
+// tslint:disable:variable-name
+
+import {encrypt, generateRandomBase64, IV_SIZE} from "../private/util";
 import {ErrorCode, TypedError} from "./common";
 import * as Args from "./args";
 
@@ -15,12 +18,10 @@ export interface Request {
     Verifier: string;
 }
 
-// tslint:disable:variable-name
-
 export class Base implements Request {
-    TriggerUnlock = false;
-    Nonce: string;
-    Verifier: string;
+    public TriggerUnlock = false;
+    public Nonce: string;
+    public Verifier: string;
     protected encryptValue: (value: string) => string;
 
     constructor(key: string) {
@@ -31,8 +32,8 @@ export class Base implements Request {
 }
 
 export class TestAssosiate extends Base {
-    RequestType = Type.TestAssosiate;
-    Id?: string;
+    public RequestType = Type.TestAssosiate;
+    public Id?: string;
 
     constructor(key: string, id?: string) {
         super(key);
@@ -44,8 +45,8 @@ export class TestAssosiate extends Base {
 }
 
 export class Associate extends Base {
-    RequestType = Type.Associate;
-    Key: string;
+    public RequestType = Type.Associate;
+    public Key: string;
 
     constructor(key: string) {
         super(key);
@@ -54,14 +55,18 @@ export class Associate extends Base {
 }
 
 export class RequiredId extends Base {
-    Id: string;
+    public Id: string;
 
     constructor(key: string, id: string) {
         super(key);
 
         if (!id) {
             throw new TypedError(
-                `The 'id' field must be defined to request/save a login. Use 'associate' method to get the 'id' value.`,
+                [
+                    `The "id" field must be defined to request/save a password records. `,
+                    `Call the "associate" method to get the "id" wired into the client instance. `,
+                    `Request constructor name: ${this.constructor.name}.`,
+                ].join(""),
                 ErrorCode.IdUndefined,
             );
         }
@@ -71,8 +76,8 @@ export class RequiredId extends Base {
 }
 
 export class Logins extends RequiredId {
-    SortSelection = false;
-    Url: string;
+    public SortSelection = false;
+    public Url: string;
 
     constructor(key: string, id: string, args: Args.Minimum) {
         super(key, id);
@@ -81,9 +86,9 @@ export class Logins extends RequiredId {
 }
 
 export class GetLogins extends Logins {
-    RequestType = Type.GetLogins;
-    SubmitUrl?: string;
-    Realm?: string;
+    public RequestType = Type.GetLogins;
+    public SubmitUrl?: string;
+    public Realm?: string;
 
     constructor(key: string, id: string, args: Args.Base) {
         super(key, id, args);
@@ -99,13 +104,13 @@ export class GetLogins extends Logins {
 }
 
 export class GetLoginsCount extends GetLogins {
-    RequestType = Type.GetLoginsCount;
+    public RequestType = Type.GetLoginsCount;
 }
 
 export class ModifyLogin extends Logins {
-    RequestType = Type.SetLogin;
-    Login: string;
-    Password: string;
+    public RequestType = Type.SetLogin;
+    public Login: string;
+    public Password: string;
 
     constructor(key: string, id: string, args: Args.Modify) {
         super(key, id, args);
@@ -116,8 +121,8 @@ export class ModifyLogin extends Logins {
 }
 
 export class CreateLogin extends ModifyLogin {
-    SubmitUrl?: string;
-    Realm?: string;
+    public SubmitUrl?: string;
+    public Realm?: string;
 
     constructor(key: string, id: string, args: Args.Create) {
         super(key, id, args);
@@ -131,7 +136,7 @@ export class CreateLogin extends ModifyLogin {
 }
 
 export class UpdateLogin extends ModifyLogin {
-    Uuid: string;
+    public Uuid: string;
 
     constructor(key: string, id: string, args: Args.Update) {
         super(key, id, args);
@@ -139,5 +144,3 @@ export class UpdateLogin extends ModifyLogin {
         this.Uuid = this.encryptValue(args.uuid);
     }
 }
-
-// tslint:enable:variable-name

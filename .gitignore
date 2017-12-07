@@ -1,9 +1,10 @@
-# generated output
-/compile
-/dist
-
-# dependencies
-node_modules
-
-# IDEs / editors
+# IDE Idea
 /.idea
+*.iml
+
+# Node.js
+node_modules
+npm-debug.log
+
+/dist/
+/output/

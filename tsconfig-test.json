@@ -1,6 +1,28 @@
 {
-  "extends": "./tsconfig.json",
+  // https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
+  // https://www.typescriptlang.org/docs/handbook/compiler-options.html
+  "compilerOptions": {
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "target": "es5",
+    "module": "commonjs",
+    "importHelpers": true,
+    "noEmitOnError": true,
+    "declaration": true,
+    "sourceMap": true,
+    "lib": [
+      "es2015"
+    ],
+    "baseUrl": ".",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/@types"
+    ]
+  },
   "include": [
-    "./src/**/*.spec.ts"
+    "./src/test/**/*{spec.test}.ts"
   ]
 }

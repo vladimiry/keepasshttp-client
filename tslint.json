@@ -1,22 +1,23 @@
 {
-    "extends": [
-        "tslint-eslint-rules",
-        "tslint:recommended"
+  "extends": [
+    "tslint:recommended"
+  ],
+  "rules": {
+    "variable-name": [
+      true,
+      "allow-leading-underscore"
     ],
-    "rules": {
-        "variable-name": [
-            true,
-            "allow-leading-underscore"
-        ],
-        "object-literal-sort-keys": false,
-        "ordered-imports": false,
-        "member-access": false,
-        "max-classes-per-file": [
-            false
-        ],
-        "interface-name": false,
-        "arrow-parens": [
-            true
-        ]
-    }
+    "max-line-length": [
+      true,
+      140
+    ],
+    "prefer-for-of": true,
+    "await-promise": true,
+    "ordered-imports": false,
+    "interface-name": [
+      true,
+      "never-prefix"
+    ],
+    "object-literal-sort-keys": false
+  }
 }

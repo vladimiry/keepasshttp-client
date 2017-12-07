@@ -1,8 +1,7 @@
-import * as test from "tape";
-import {KeePassHttpClient} from "./client";
-import {Response} from "./model";
-import {ErrorCode, TypedError} from "./model/common";
-import {encrypt, generateRandomBase64, IV_SIZE, KEY_SIZE} from "./util";
+import {ErrorValidator, test} from "ava";
+
+import {KeePassHttpClient, Model} from "dist";
+import {encrypt, generateRandomBase64, IV_SIZE, KEY_SIZE} from "../lib/private/util";
 
 const clientOpts = {
     url: "http://localhost:12345",
@@ -15,42 +14,23 @@ const clientOpts = {
 test("constructor args should be setup as a member fields", (t) => {
     const client = new KeePassHttpClient(clientOpts);
 
-    t.equal(client.url, clientOpts.url);
-    t.equal(client.id, clientOpts.keyId.id);
-    t.equal(client.key, clientOpts.keyId.key);
-
-    t.end();
+    t.is(client.url, clientOpts.url);
+    t.is(client.id, clientOpts.keyId.id);
+    t.is(client.key, clientOpts.keyId.key);
 });
 
 test("request methods should fail if 'id' has not been setup", async (t) => {
-    t.plan(4 * 2);
-
-    const client = new KeePassHttpClient();
-    const assert = (error: Error) => {
-        t.ok(error instanceof TypedError);
-        t.equal((error as TypedError).code, ErrorCode.IdUndefined);
+    const assertError: ErrorValidator = (error) => {
+        const testInstance = error instanceof Model.Common.TypedError;
+        const testErrorCode = error.code === Model.Common.ErrorCode.IdUndefined;
+        return testInstance && testErrorCode;
     };
+    const client = new KeePassHttpClient();
 
-    try {
-        await client.getLogins({url: ""});
-    } catch (error) {
-        assert(error);
-    }
-    try {
-        await client.getLoginsCount({url: ""});
-    } catch (error) {
-        assert(error);
-    }
-    try {
-        await client.createLogin({url: "", login: "", password: ""});
-    } catch (error) {
-        assert(error);
-    }
-    try {
-        await client.updateLogin({url: "", uuid: "", login: "", password: ""});
-    } catch (error) {
-        assert(error);
-    }
+    await t.throws(client.getLogins({url: ""}), assertError);
+    await t.throws(client.getLoginsCount({url: ""}), assertError);
+    await t.throws(client.createLogin({url: "", login: "", password: ""}), assertError);
+    await t.throws(client.updateLogin({url: "", uuid: "", login: "", password: ""}), assertError);
 });
 
 test("requests methods should return a promises", (t) => {
@@ -58,19 +38,15 @@ test("requests methods should return a promises", (t) => {
         && typeof object.catch === "function";
     const client = new KeePassHttpClient(clientOpts);
 
-    t.ok(isPromise(client.testAssociate()));
-    t.ok(isPromise(client.associate()));
-    t.ok(isPromise(client.getLogins({url: ""})));
-    t.ok(isPromise(client.getLoginsCount({url: ""})));
-    t.ok(isPromise(client.createLogin({url: "", login: "", password: ""})));
-    t.ok(isPromise(client.updateLogin({url: "", uuid: "", login: "", password: ""})));
-
-    t.end();
+    t.true(isPromise(client.testAssociate()));
+    t.true(isPromise(client.associate()));
+    t.true(isPromise(client.getLogins({url: ""})));
+    t.true(isPromise(client.getLoginsCount({url: ""})));
+    t.true(isPromise(client.createLogin({url: "", login: "", password: ""})));
+    t.true(isPromise(client.updateLogin({url: "", uuid: "", login: "", password: ""})));
 });
 
 test("values of the password entry should be properly decrypted", async (t) => {
-    t.plan(6);
-
     const expectedEntriesResponse = {
         Success: true,
         Nonce: "",
@@ -81,7 +57,7 @@ test("values of the password entry should be properly decrypted", async (t) => {
                 Login: "login",
                 Password: "password",
                 Uuid: "uuid",
-            } as Response.Entry,
+            } as Model.Response.Entry,
         ],
     };
 
@@ -118,11 +94,11 @@ test("values of the password entry should be properly decrypted", async (t) => {
     const entry = response.Entries[0];
     const expectedEntry = expectedEntriesResponse.Entries[0];
 
-    t.ok(response);
-    t.ok(response.Entries && response.Entries.length === 1);
+    t.truthy(response);
+    t.truthy(response.Entries && response.Entries.length === 1);
 
-    t.equal(entry.Uuid, expectedEntry.Uuid);
-    t.equal(entry.Name, expectedEntry.Name);
-    t.equal(entry.Login, expectedEntry.Login);
-    t.equal(entry.Password, expectedEntry.Password);
+    t.is(entry.Uuid, expectedEntry.Uuid);
+    t.is(entry.Name, expectedEntry.Name);
+    t.is(entry.Login, expectedEntry.Login);
+    t.is(entry.Password, expectedEntry.Password);
 });
