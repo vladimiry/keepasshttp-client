@@ -14,7 +14,7 @@ Using TypeScript and async/await:
 ```typescript
 import {KeePassHttpClient, Model as KeePassHttpClientModel} from "keepasshttp-client";
 import {Model as StoreModel, Store} from "fs-json-store";
-import {EncryptionAdapter} from "keepasshttp-client";
+import {EncryptionAdapter} from "fs-json-store-encryption-adapter";
 
 type KeePassHttpSettings = Partial<StoreModel.StoreEntity> & KeePassHttpClientModel.Common.KeyId;
 
@@ -81,7 +81,7 @@ Using JavaScript and Promises:
 ```javascript
 const {KeePassHttpClient} = require("keepasshttp-client");
 const {Store} = require("fs-json-store");
-const {EncryptionAdapter} = require("keepasshttp-client");
+const {EncryptionAdapter} = require("fs-json-store-encryption-adapter");
 
 const password = process.env.PASSWORD;
 
