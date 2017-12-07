@@ -2,6 +2,8 @@
 
 is a Node.js module for interaction with [KeePassHTTP](https://github.com/pfn/keepasshttp).
 
+[![Build Status: Linux / MacOS](https://travis-ci.org/vladimiry/keepasshttp-client.svg?branch=master)](https://travis-ci.org/vladimiry/keepasshttp-client)
+
 ## Notes
 
 - Supported request types: `test-associate`, `associate`, `get-logins`, `get-logins-count`, `set-login`. Respective methods return ES2015 Promises.
@@ -12,7 +14,7 @@ Using TypeScript and async/await:
 ```typescript
 import {KeePassHttpClient, Model as KeePassHttpClientModel} from "keepasshttp-client";
 import {Model as StoreModel, Store} from "fs-json-store";
-import {EncryptionAdapter} from "fs-json-store-encryption-adapter";
+import {EncryptionAdapter} from "keepasshttp-client";
 
 type KeePassHttpSettings = Partial<StoreModel.StoreEntity> & KeePassHttpClientModel.Common.KeyId;
 
@@ -79,7 +81,7 @@ Using JavaScript and Promises:
 ```javascript
 const {KeePassHttpClient} = require("keepasshttp-client");
 const {Store} = require("fs-json-store");
-const {EncryptionAdapter} = require("fs-json-store-encryption-adapter");
+const {EncryptionAdapter} = require("keepasshttp-client");
 
 const password = process.env.PASSWORD;
 
