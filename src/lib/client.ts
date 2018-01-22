@@ -1,4 +1,7 @@
+import {globalAgent as httpGlobalAgent} from "http";
+import {globalAgent as httpsGlobalAgent} from "https";
 import fetch from "node-fetch";
+import * as url from "url";
 
 import {KeyId, NetworkConnectionError, NetworkResponseContentError, NetworkResponseStatusCodeError} from "./model/common";
 import {decrypt, generateRandomBase64, KEY_SIZE} from "./private/util";
@@ -82,10 +85,22 @@ export class KeePassHttpClient {
 
     private async request<T extends Response.Base>(request: any): Promise<T> {
         const body = JSON.stringify(request);
+        const {protocol, host} = url.parse(this.url);
+        const agent = protocol === "http:" ? httpGlobalAgent : httpsGlobalAgent;
         let fetchedResponse;
 
         try {
-            fetchedResponse = await fetch(this.url, {method: "POST", body});
+            fetchedResponse = await fetch(this.url, {
+                agent,
+                body,
+                compress: false,
+                method: "POST",
+                headers: {
+                    "accept": "application/json",
+                    "content-type": "application/json",
+                    ...(host ? {host} : {}),
+                },
+            });
         } catch (err) {
             throw new NetworkConnectionError(err.message);
         }
