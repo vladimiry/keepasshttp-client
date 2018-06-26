@@ -1,7 +1,7 @@
+import fetch from "node-fetch";
+import url from "url";
 import {globalAgent as httpGlobalAgent} from "http";
 import {globalAgent as httpsGlobalAgent} from "https";
-import fetch from "node-fetch";
-import * as url from "url";
 
 import {KeyId, NetworkConnectionError, NetworkResponseContentError, NetworkResponseStatusCodeError} from "./model/common";
 import {decrypt, generateRandomBase64, KEY_SIZE} from "./private/util";
