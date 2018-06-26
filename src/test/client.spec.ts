@@ -1,4 +1,4 @@
-import {ErrorValidator, test} from "ava";
+import {test} from "ava";
 
 import {KeePassHttpClient, Model} from "dist";
 import {encrypt, generateRandomBase64, IV_SIZE, KEY_SIZE} from "../lib/private/util";
@@ -20,17 +20,16 @@ test("constructor args should be setup as a member fields", (t) => {
 });
 
 test("request methods should fail if 'id' has not been setup", async (t) => {
-    const assertError: ErrorValidator = (error) => {
-        const testInstance = error instanceof Model.Common.TypedError;
-        const testErrorCode = error.code === Model.Common.ErrorCode.IdUndefined;
-        return testInstance && testErrorCode;
-    };
     const client = new KeePassHttpClient();
+    const assertError = (error: any) => {
+        t.true(error instanceof Model.Common.TypedError, "error instance");
+        t.is(Model.Common.ErrorCode.IdUndefined, error.code, "error code");
+    };
 
-    await t.throws(client.getLogins({url: ""}), assertError);
-    await t.throws(client.getLoginsCount({url: ""}), assertError);
-    await t.throws(client.createLogin({url: "", login: "", password: ""}), assertError);
-    await t.throws(client.updateLogin({url: "", uuid: "", login: "", password: ""}), assertError);
+    assertError(await t.throws(client.getLogins({url: ""})));
+    assertError(await t.throws(client.getLoginsCount({url: ""})));
+    assertError(await t.throws(client.createLogin({url: "", login: "", password: ""})));
+    assertError(await t.throws(client.updateLogin({url: "", uuid: "", login: "", password: ""})));
 });
 
 test("requests methods should return a promises", (t) => {
