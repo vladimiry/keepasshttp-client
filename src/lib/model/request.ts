@@ -127,7 +127,9 @@ export class CreateLogin extends ModifyLogin {
     constructor(key: string, id: string, args: Args.Create) {
         super(key, id, args);
 
-        this.SubmitUrl = args.submitUrl;
+        if (args.submitUrl) {
+            this.SubmitUrl = this.encryptValue(args.submitUrl);
+        }
 
         if (args.realm) {
             this.Realm = this.encryptValue(args.realm);
