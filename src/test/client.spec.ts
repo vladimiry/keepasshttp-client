@@ -1,4 +1,4 @@
-import {test} from "ava";
+import test from "ava";
 
 import {KeePassHttpClient, Model} from "dist";
 import {encrypt, generateRandomBase64, IV_SIZE, KEY_SIZE} from "../lib/private/util";
@@ -26,10 +26,10 @@ test("request methods should fail if 'id' has not been setup", async (t) => {
         t.is(Model.Common.ErrorCode.IdUndefined, error.code, "error code");
     };
 
-    assertError(await t.throws(client.getLogins({url: ""})));
-    assertError(await t.throws(client.getLoginsCount({url: ""})));
-    assertError(await t.throws(client.createLogin({url: "", login: "", password: ""})));
-    assertError(await t.throws(client.updateLogin({url: "", uuid: "", login: "", password: ""})));
+    assertError(await t.throwsAsync(client.getLogins({url: ""})));
+    assertError(await t.throwsAsync(client.getLoginsCount({url: ""})));
+    assertError(await t.throwsAsync(client.createLogin({url: "", login: "", password: ""})));
+    assertError(await t.throwsAsync(client.updateLogin({url: "", uuid: "", login: "", password: ""})));
 });
 
 test("requests methods should return a promises", (t) => {
