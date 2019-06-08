@@ -1,6 +1,6 @@
 import test from "ava";
 
-import {KeePassHttpClient, Model} from "dist";
+import {KeePassHttpClient, Model} from "lib";
 import {encrypt, generateRandomBase64, IV_SIZE, KEY_SIZE} from "../lib/private/util";
 
 const clientOpts = {

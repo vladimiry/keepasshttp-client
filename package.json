@@ -1,6 +1,6 @@
 {
   "name": "keepasshttp-client",
-  "version": "2.2.10",
+  "version": "2.2.11",
   "description": "Node.js module for interaction with KeePassHTTP",
   "author": "Vladimir Yakovlev <dev.vladimir.y@gmail.com> (https://github.com/vladimiry)",
   "license": "MIT",
@@ -11,13 +11,14 @@
     "security",
     "client"
   ],
-  "main": "./index.js",
+  "main": "./lib/index.js",
   "scripts": {
-    "dist:compile": "tsc -p ./src/lib/tsconfig.json --listEmittedFiles",
-    "dist:compile:watch": "tsc -p ./src/lib/tsconfig.json -w",
-    "dist:clean": "rimraf ./dist",
-    "dist:copy": "cpx \"{package.json,README.md,LICENSE}\" ./dist",
-    "dist": "npm-run-all lint dist:clean dist:compile dist:copy test",
+    "postinstall": "npm-run-all yarn:audit",
+    "yarn:audit": "yarn audit",
+    "lib:compile": "tsc -p ./src/lib/tsconfig.json --listEmittedFiles",
+    "lib:compile:watch": "tsc -p ./src/lib/tsconfig.json -w",
+    "lib:clean": "rimraf ./lib",
+    "lib": "npm-run-all lint lib:clean lib:compile test",
     "lint:src": "tslint -p ./src/lib/tsconfig.json -c ./tslint.json \"./src/{lib,@types}/**/*.ts\"",
     "lint:test": "tslint -p ./src/test/tsconfig.json -c ./src/test/tslint.json \"./src/test/**/*.ts\"",
     "lint": "npm-run-all lint:src lint:test",
@@ -37,22 +38,21 @@
     ]
   },
   "devDependencies": {
-    "@types/node": "^11.9.5",
-    "@types/node-fetch": "^2.1.6",
+    "@types/node": "^12.0.7",
+    "@types/node-fetch": "^2.3.5",
     "ava": "^1.2.1",
-    "cpx": "^1.5.0",
     "cross-env": "^5.2.0",
     "npm-run-all": "^4.1.5",
     "pre-commit": "^1.2.2",
     "rimraf": "^2.6.3",
-    "ts-node": "^8.0.2",
+    "ts-node": "^8.2.0",
     "tsconfig-paths": "^3.8.0",
-    "tslint": "^5.13.0",
-    "tslint-rules-bunch": "^0.0.7",
-    "typescript": "^3.3.3333"
+    "tslint": "^5.17.0",
+    "tslint-rules-bunch": "^0.0.8",
+    "typescript": "^3.5.1"
   },
   "dependencies": {
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^2.6.0",
     "tslib": "^1.9.3"
   }
 }
