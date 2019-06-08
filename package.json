@@ -1,6 +1,6 @@
 {
   "name": "keepasshttp-client",
-  "version": "2.2.11",
+  "version": "2.2.12",
   "description": "Node.js module for interaction with KeePassHTTP",
   "author": "Vladimir Yakovlev <dev.vladimir.y@gmail.com> (https://github.com/vladimiry)",
   "license": "MIT",
@@ -13,8 +13,6 @@
   ],
   "main": "./lib/index.js",
   "scripts": {
-    "postinstall": "npm-run-all yarn:audit",
-    "yarn:audit": "yarn audit",
     "lib:compile": "tsc -p ./src/lib/tsconfig.json --listEmittedFiles",
     "lib:compile:watch": "tsc -p ./src/lib/tsconfig.json -w",
     "lib:clean": "rimraf ./lib",
