@@ -1,6 +1,6 @@
 {
   "name": "keepasshttp-client",
-  "version": "2.2.13",
+  "version": "2.2.14",
   "description": "Node.js module for interaction with KeePassHTTP",
   "author": "Vladimir Yakovlev <dev.vladimir.y@gmail.com> (https://github.com/vladimiry)",
   "license": "MIT",
